@@ -11,3 +11,6 @@ new Vue({
   router,
   store
 }).$mount('#app')
+
+import './assets/css/reset.css';
+import './assets/vue-font/iconfont.css';
