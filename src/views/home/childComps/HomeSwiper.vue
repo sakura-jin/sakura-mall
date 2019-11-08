@@ -1,8 +1,8 @@
 <template>
     <swiper :options='swiperOption'>
-        <swiper-slide><img src="../../../assets/images/swiper/swiper1.jpg" alt=""></swiper-slide>
-        <swiper-slide><img src="../../../assets/images/swiper/swiper2.jpg" alt=""></swiper-slide>
-        <swiper-slide><img src="../../../assets/images/swiper/swiper3.jpg" alt=""></swiper-slide>
+        <swiper-slide><img src="../../../assets/images/home/swiper1.jpg" alt=""></swiper-slide>
+        <swiper-slide><img src="../../../assets/images/home/swiper2.jpg" alt=""></swiper-slide>
+        <swiper-slide><img src="../../../assets/images/home/swiper3.jpg" alt=""></swiper-slide>
         <div class="swiper-pagination" slot='pagination'></div>
     </swiper>
 </template>
