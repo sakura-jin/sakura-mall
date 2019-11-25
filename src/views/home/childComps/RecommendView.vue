@@ -1,20 +1,10 @@
 <template>
     <div class="recommend">
-        <div class="recommend-item">
-            <img src="../../../assets/images/home/recommend1.jpg" alt="">
-            <p>母婴</p>
-        </div>
-        <div class="recommend-item">
-            <img src="../../../assets/images/home/recommend2.jpg" alt="">
-            <p>包包</p>
-        </div>
-        <div class="recommend-item">
-            <img src="../../../assets/images/home/recommend3.jpg" alt="">
-            <p>家居</p>
-        </div>
-        <div class="recommend-item">
-            <img src="../../../assets/images/home/recommend4.jpg" alt="">
-            <p>配饰</p>
+        <div class="recommend-item" v-for="(item,index) in recommends" :key=index>
+            <a :href="item.link">
+                <img :src="item.image" alt="">
+                <p>{{item.title}}</p>
+            </a>
         </div>
     </div>
 </template>
@@ -22,6 +12,7 @@
 <script>
 export default {
     name:'RecommendView',
+    props:['recommends'],
     data(){
        return {
        }
@@ -38,7 +29,9 @@ export default {
     .recommend-item{
         flex: 1;
        img{
-           width: 70px;
+        width: 70px;
+        height: 70px;
+        margin-bottom: 10px;
        }
     }
 }

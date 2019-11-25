@@ -6,6 +6,13 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "759461",
+      "name": "star",
+      "font_class": "star",
+      "unicode": "e64a",
+      "unicode_decimal": 58954
+    },
+    {
       "icon_id": "9214986",
       "name": "电影_line",
       "font_class": "movie",
