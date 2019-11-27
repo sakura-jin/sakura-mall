@@ -13,6 +13,13 @@
       "unicode_decimal": 58954
     },
     {
+      "icon_id": "4460483",
+      "name": "向上",
+      "font_class": "up",
+      "unicode": "e623",
+      "unicode_decimal": 58915
+    },
+    {
       "icon_id": "9214986",
       "name": "电影_line",
       "font_class": "movie",

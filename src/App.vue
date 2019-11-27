@@ -16,5 +16,4 @@ export default {
 </script>
 
 <style lang="scss">
-#app{padding-top: 48px;}
 </style>

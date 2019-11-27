@@ -1,13 +1,16 @@
 <template>
-    <div>
+    <div id="home">
         <nav-bar class="home-nav">
             <span slot='center'>Sakura-Mall</span>
         </nav-bar>
-        <home-swiper :banners='banners'></home-swiper>
-        <recommend-view :recommends='recommends'></recommend-view>
-        <feature-view></feature-view>
-        <tab-control class="tab-control" :title='controlTitle' @tabClick='tabClick'></tab-control>
-        <good-list :goods-list='showGoodsList'></good-list>
+        <scroll class="content"  :probe-type='3' :pull-upload='true' ref='scroll' @scroll='contentScroll'>
+            <home-swiper :banners='banners'></home-swiper>
+            <recommend-view :recommends='recommends'></recommend-view>
+            <feature-view></feature-view>
+            <tab-control class="tab-control" :title='controlTitle' @tabClick='tabClick'></tab-control>
+            <good-list :goods-list='showGoodsList'></good-list>
+        </scroll>
+        <back-top @click.native='backClick' v-show='isShowBackTop'></back-top>
     </div>
 </template>
 
@@ -19,6 +22,8 @@ import RecommendView from '@/views/home/childComps/RecommendView'
 import TabControl from '@/components/content/tabControl/TabControl'
 import GoodList from '@/components/content/goods/GoodList'
 import {getHomeMultidata,getHomeData} from '@/network/home'
+import Scroll from '@/components/common/scroll/Scroll'
+import BackTop from '@/components/content/backTop/BackTop'
 export default {
     name:"Home",
     data(){
@@ -31,7 +36,8 @@ export default {
                 'new':{page:1,list:[]},
                 'sell':{page:1,list:[]}
             },
-            currentType:'pop'
+            currentType:'pop',
+            isShowBackTop:false
         }
     },
     components:{
@@ -40,7 +46,9 @@ export default {
         FeatureView,
         RecommendView,
         TabControl,
-        GoodList
+        GoodList,
+        Scroll,
+        BackTop
     },
     created(){
         this.getHomeMultidata();
@@ -69,6 +77,12 @@ export default {
                     break;
             }
         },
+        backClick(){
+           this.$refs.scroll.scrollTo(0,0);
+        },
+        contentScroll(position){
+            this.isShowBackTop=(-position.y)>1000;
+        },
         // network
         getHomeMultidata(){
             getHomeMultidata().then(res=>{
@@ -89,16 +103,23 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.home-nav{
-    background: pink;
-    color: #fff;
-    font-weight: bold;
-    font-size: 20px;
-};
-.tab-control{
-    position: sticky;
-    top: 48px;
-
+#home{
+    height: 100vh;
+    position: relative;
+    .home-nav{
+        background: pink;
+        color: #fff;
+        font-weight: bold;
+        font-size: 20px;
+    };
+    .content{
+        position: absolute;
+        top: 48px;
+        bottom: 49px;
+        left: 0;
+        right: 0;
+        overflow: hidden;
+    }
 }
     
 </style>
