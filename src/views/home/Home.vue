@@ -3,11 +3,12 @@
         <nav-bar class="home-nav">
             <span slot='center'>Sakura-Mall</span>
         </nav-bar>
-        <scroll class="content"  :probe-type='3' :pull-upload='true' ref='scroll' @scroll='contentScroll'>
-            <home-swiper :banners='banners'></home-swiper>
+        <tab-control v-show="isTabShow" class="tab-control" :title='controlTitle' @tabClick='tabClick' ref='tabControl1'></tab-control>
+        <scroll class="content"  :probe-type='3' :pull-up-load='true' ref='scroll' @scroll='contentScroll' @pullingUp='loadMore'>
+            <home-swiper :banners='banners' @swiperLoad='swiperLoad'></home-swiper>
             <recommend-view :recommends='recommends'></recommend-view>
             <feature-view></feature-view>
-            <tab-control class="tab-control" :title='controlTitle' @tabClick='tabClick'></tab-control>
+            <tab-control :title='controlTitle' @tabClick='tabClick' ref='tabControl2'></tab-control>
             <good-list :goods-list='showGoodsList'></good-list>
         </scroll>
         <back-top @click.native='backClick' v-show='isShowBackTop'></back-top>
@@ -24,6 +25,7 @@ import GoodList from '@/components/content/goods/GoodList'
 import {getHomeMultidata,getHomeData} from '@/network/home'
 import Scroll from '@/components/common/scroll/Scroll'
 import BackTop from '@/components/content/backTop/BackTop'
+import {debounce} from '@/common/utils'
 export default {
     name:"Home",
     data(){
@@ -37,7 +39,11 @@ export default {
                 'sell':{page:1,list:[]}
             },
             currentType:'pop',
-            isShowBackTop:false
+            isShowBackTop:false,
+            itemImglistenner:null,
+            saveY:0,
+            tabOffsetTop:0,
+            isTabShow:false
         }
     },
     components:{
@@ -48,7 +54,7 @@ export default {
         TabControl,
         GoodList,
         Scroll,
-        BackTop
+        BackTop,
     },
     created(){
         this.getHomeMultidata();
@@ -63,6 +69,20 @@ export default {
             return this.goodsList[this.currentType].list;
         }
     },
+    mounted(){
+        let refresh=debounce(this.$refs.scroll.refresh,50);
+        //保存监听的事件
+        this.itemImglistenner=()=>{refresh()}
+        this.$bus.$on('itemImgload',this.itemImglistenner);
+    },
+    activated(){
+        // 返回页面原来位置
+        this.$refs.scroll.scrollTo(0,this.saveY);
+        this.$refs.scroll.refresh();
+    },
+    deactivated(){
+        this.saveY=this.$refs.scroll.getScrollY();
+    },
     methods:{
         tabClick(index){
             switch(index){
@@ -76,12 +96,23 @@ export default {
                     this.currentType='sell'
                     break;
             }
+            this.$refs.tabControl1.currentIndex=index;
+            this.$refs.tabControl2.currentIndex=index;
         },
         backClick(){
            this.$refs.scroll.scrollTo(0,0);
         },
         contentScroll(position){
             this.isShowBackTop=(-position.y)>1000;
+            this.isTabShow=(-position.y)>this.tabOffsetTop;
+        },
+        // 上拉加载
+        loadMore(){
+            this.getHomeProducts(this.currentType);
+        },
+        swiperLoad(){
+            this.tabOffsetTop=this.$refs.tabControl2.$el.offsetTop;
+            console.log(this.tabOffsetTop);
         },
         // network
         getHomeMultidata(){
@@ -95,6 +126,7 @@ export default {
                 const goodsList=res.data.list;
                 this.goodsList[type].list.push(...goodsList);
                 this.goodsList[type].page+=1;
+                this.$refs.scroll.finishPullUp();
             })
         }
     }
@@ -112,6 +144,10 @@ export default {
         font-weight: bold;
         font-size: 20px;
     };
+    .tab-control{
+        position: relative;
+        z-index: 10;
+    }
     .content{
         position: absolute;
         top: 48px;

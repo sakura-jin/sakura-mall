@@ -6,7 +6,9 @@ import VueAwesomeSwiper from 'vue-awesome-swiper'
 import FastClick from 'fastclick'
 
 Vue.config.productionTip = false
-
+// vue实例可以作为事件总线
+Vue.prototype.$bus=new Vue();
+// 移动端300毫秒延迟
 FastClick.attach(document.body);
 
 new Vue({
