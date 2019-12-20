@@ -10,7 +10,15 @@
 </template>
 <script>
 export default {
-    name:"TabContentCategory"
+    name:"TabContentCategory",
+    props:{
+        subcategories:{
+            type:Object,
+            default(){
+                return {}
+            }
+        }
+    }
 }
 </script>
 <style lang="scss" scoped>

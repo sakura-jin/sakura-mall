@@ -26,6 +26,7 @@ import {getHomeMultidata,getHomeData} from '@/network/home'
 import Scroll from '@/components/common/scroll/Scroll'
 import BackTop from '@/components/content/backTop/BackTop'
 import {debounce} from '@/common/utils'
+import {itemListenerMixin,backTopMixin} from '@/common/mixin'
 export default {
     name:"Home",
     data(){
@@ -39,11 +40,11 @@ export default {
                 'sell':{page:1,list:[]}
             },
             currentType:'pop',
-            isShowBackTop:false,
-            itemImglistenner:null,
             saveY:0,
             tabOffsetTop:0,
-            isTabShow:false
+            isTabShow:false,
+            // isShowBackTop:false,
+            // itemImglistenner:null
         }
     },
     components:{
@@ -54,8 +55,9 @@ export default {
         TabControl,
         GoodList,
         Scroll,
-        BackTop,
+        // BackTop
     },
+    mixins:[itemListenerMixin,backTopMixin],
     created(){
         this.getHomeMultidata();
         // 请求商品数据
@@ -70,10 +72,10 @@ export default {
         }
     },
     mounted(){
-        let refresh=debounce(this.$refs.scroll.refresh,50);
+        // let refresh=debounce(this.$refs.scroll.refresh,50);
         //保存监听的事件
-        this.itemImglistenner=()=>{refresh()}
-        this.$bus.$on('itemImgload',this.itemImglistenner);
+        // this.itemImglistenner=()=>{refresh()}
+        // this.$bus.$on('itemImgload',this.itemImglistenner);
     },
     activated(){
         // 返回页面原来位置
@@ -82,6 +84,8 @@ export default {
     },
     deactivated(){
         this.saveY=this.$refs.scroll.getScrollY();
+        // 取消全局事件监听
+        this.$bus.$off('itemImgload',this.itemImglistenner);
     },
     methods:{
         tabClick(index){
@@ -99,13 +103,13 @@ export default {
             this.$refs.tabControl1.currentIndex=index;
             this.$refs.tabControl2.currentIndex=index;
         },
-        backClick(){
-           this.$refs.scroll.scrollTo(0,0);
-        },
         contentScroll(position){
             this.isShowBackTop=(-position.y)>1000;
             this.isTabShow=(-position.y)>this.tabOffsetTop;
         },
+        // backClick(){
+        //    this.$refs.scroll.scrollTo(0,0);
+        // },
         // 上拉加载
         loadMore(){
             this.getHomeProducts(this.currentType);

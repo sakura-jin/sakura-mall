@@ -1,16 +1,17 @@
 <template>
     <div id="detail">
-        <detail-nav-bar></detail-nav-bar>
-        <scroll class="content" ref='scroll' :probe-type=3>
-            <detail-swiper :images='topImages'></detail-swiper>
+        <detail-nav-bar @titleClick='titleClick' :currentIndex='currentIndex'></detail-nav-bar>
+        <scroll class="content" ref='scroll' :probe-type=3 @scroll='contentScroll'>
+            <detail-swiper :images='topImages' ref='goods' @imageLoad='imageLoad'></detail-swiper>
             <detail-base-info :goods='goods'></detail-base-info>
             <detail-shop-info :shop='shop'></detail-shop-info>
-            <detail-goods-info :detailInfo='detailInfo'></detail-goods-info>
-            <detail-param-info :paramInfo='paramInfo'></detail-param-info>
-            <detail-comment-info :comment-info='commentInfo'></detail-comment-info>
-            <detail-recommend-info :recommend-list='recommendList'></detail-recommend-info>
+            <detail-goods-info :detailInfo='detailInfo' @imageLoad='imageLoad'></detail-goods-info>
+            <detail-param-info :paramInfo='paramInfo' ref='params'></detail-param-info>
+            <detail-comment-info :comment-info='commentInfo' ref='comment'></detail-comment-info>
+            <detail-recommend-info :recommend-list='recommendList' ref='recommend'></detail-recommend-info>
         </scroll>
-        <detail-bottom-bar></detail-bottom-bar>
+         <back-top @click.native='backClick' v-show='isShowBackTop'></back-top>
+        <detail-bottom-bar @addCart='addCart'></detail-bottom-bar>
     </div>
 </template>
 
@@ -25,7 +26,10 @@ import DetailCommentInfo from './childComps/DetailCommentInfo'
 import DetailRecommendInfo from './childComps/DetailRecommendInfo'
 import DetailBottomBar from './childComps/DetailBottomBar'
 import Scroll from '@/components/common/scroll/Scroll'
+import BackTop from '@/components/content/backTop/BackTop'
 import {getDetail,getRecommend,Goods,Shop,GoodsParam} from '@/network/detail'
+import {debounce} from '@/common/utils'
+import {itemListenerMixin,backTopMixin} from '@/common/mixin'
 export default {
     name:"Detail",
     data(){
@@ -37,7 +41,11 @@ export default {
             detailInfo:{},
             paramInfo:{},
             commentInfo:{},
-            recommendList:[]
+            recommendList:[],
+            // itemImglistenner:null
+            // isShowBackTop:false
+             themeTops:[],
+             currentIndex:0
         }
     },
     components:{
@@ -50,13 +58,31 @@ export default {
         DetailCommentInfo,
         DetailRecommendInfo,
         DetailBottomBar,
+        // BackTop,
         Scroll
     },
     created(){
         this.getDetailData();
         this.getRecommend();
     },
+    mixins:[itemListenerMixin,backTopMixin],
+    mounted(){
+            // let refresh=debounce(this.$refs.scroll.refresh,50);
+            // this.itemImglistenner=()=>{refresh()}
+            // this.$bus.$on('itemImgload',this.itemImglistenner);
+    },
+    destroyed(){
+        this.$bus.$off('itemImgLoad',this.itemImglistenner);
+    },
     methods:{
+        titleClick(index){
+            this.currentIndex=index;
+            this.$refs.scroll.scrollTo(0,-this.themeTops[index]);
+        },
+        imageLoad(){
+            this.$refs.scroll.refresh();
+            this.getOffsetTop();
+        },
         getDetailData(){
           this.iid=this.$route.params.iid;
           getDetail(this.iid).then((res)=>{
@@ -76,7 +102,6 @@ export default {
             // 获取评论信息
             if(data.rate.list){
                 this.commentInfo=data.rate.list[0];
-                console.log(this.commentInfo);
             }
          })
         },
@@ -88,9 +113,47 @@ export default {
                 }else{
                     this.recommendList=res.data.list;
                 }
-            })
-        }
+                this.getOffsetTop();
 
+            })
+        },
+        contentScroll(position){
+            this.isShowBackTop=(-position.y)>1000;
+            this.listenScrollTheme(-position.y);
+        },
+        listenScrollTheme(position){
+            let length=this.themeTops.length;
+            for(let i=0;i<length;i++){
+                let iPos=this.themeTops[i];
+                if(position>=iPos&&position<this.themeTops[i+1]){
+                    this.currentIndex=i;
+                    break;
+                }
+            }
+        },
+        getOffsetTop(){
+            this.themeTops=[];
+            this.themeTops.push(this.$refs.goods.$el.offsetTop-48);
+            this.themeTops.push(this.$refs.params.$el.offsetTop-48);
+            this.themeTops.push(this.$refs.comment.$el.offsetTop-48);
+            this.themeTops.push(this.$refs.recommend.$el.offsetTop-48);
+            this.themeTops.push(Number.MAX_VALUE);
+            // console.log(this.themeTops);
+        },
+        // backClick(){
+        //     this.$refs.scroll.scrollTo(0,0);
+        // }
+        addCart(){
+            const cart={};
+            cart.iid=this.iid;
+            cart.imgUrl=this.topImages[0];
+            cart.title = this.goods.title
+            cart.desc = this.goods.desc;
+            cart.nowPrice = this.goods.nowPrice;
+            cart.count=1;
+            // 添加到store中
+            this.$store.commit('addCart',cart);
+        }
     }
 }
 </script>

@@ -4,9 +4,9 @@
             <span slot='center'>分类页</span>
         </nav-bar>
         <div class="content">
-            <tab-menu :categories='categories'></tab-menu>
+            <tab-menu :categories='categories' @selectItem='selectItem'></tab-menu>
             <scroll id="tab-content">
-
+                <tab-content-category :subcategories="showSubcategory"></tab-content-category>
             </scroll>
         </div>
     </div>
@@ -15,7 +15,8 @@
 <script>
 import NavBar from '@/components/common/navbar/NavBar'
 import TabMenu from './childComps/TabMenu'
-import {getCategory} from '@/network/category'
+import TabContentCategory from './childComps/TabContentCategory'
+import {getCategory,getSubcategory} from '@/network/category'
 import Scroll from '@/components/common/scroll/Scroll'
 export default {
     name:"Category",
@@ -23,27 +24,56 @@ export default {
         return{
             categories:[],
             currentIndex:-1,
-            catagoryDetail:{}
+            categoryData:{}
         }
     },
     components:{
         NavBar,
         TabMenu,
-        Scroll
+        Scroll,
+        TabContentCategory
     },
     created(){
         this.getCategory();
     },
+    computed: {
+        showSubcategory(){
+            if(this.currentIndex==-1){
+                return {};
+            }else{
+                return this.categoryData[this.currentIndex].subcategories;
+            }
+
+        }
+    },
     methods:{
         getCategory(){
             getCategory().then(res=>{
+                // 获取分类数据
                 this.categories=res.data.category.list;
+                console.log(this.categories);
+                // 初始化每个类别的子数据
+                for(let i=0;i<this.categories.length;i++){
+                    this.categoryData[i]={
+                        subcategories:{}
+                    }
+                }
+                // this.getSubcatagories(0);
             })
         },
-        getSubcatagories(index){
-            this.currentIndex=index;
-            const mailKey=this.categories[index].maitKey;
-        }
+        selectItem(index){
+            // this.getSubcatagories(index);
+        },
+        // getSubcatagories(index){
+        //     this.currentIndex=index;
+        //     const mailKey=this.categories[index].maitKey;
+        //     getSubcategory(mailKey).then(res=>{
+        //         console.log(res);
+        //         // this.categoryData[index].subcategories = res.data;
+        //         // this.categoryData = {...this.categoryData}
+        //     })
+            
+        // }
     }
 }
 </script>

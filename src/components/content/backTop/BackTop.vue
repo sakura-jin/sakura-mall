@@ -13,7 +13,7 @@ export default {
 .back-top{
     position: fixed;
     right: 10px;
-    bottom: 58px;
+    bottom: 62px;
     width: 42px;
     height: 42px;
     line-height: 42px;

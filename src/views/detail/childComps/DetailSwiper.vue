@@ -1,6 +1,6 @@
 <template>
     <swiper :options='swiperOption' class="detail-swiper" v-if='images.length'>
-        <swiper-slide v-for="(item,index) in images" :key=index><img :src='item'></swiper-slide>
+        <swiper-slide v-for="(item,index) in images" :key=index><img :src='item' @load="imageLoad"></swiper-slide>
         <div class="swiper-pagination" slot='pagination'></div>
     </swiper>
 </template>
@@ -24,11 +24,20 @@ export default {
                     el:'.swiper-pagination'
                 }
             },
+            isLoad:false
         }
     },
     components:{
         swiper,
         swiperSlide
+    },
+    methods:{
+        imageLoad(){
+           if(!this.isLoad){
+               this.$emit('imageLoad');
+                this.isLoad=true;
+           }
+        }
     }
 }
 </script>

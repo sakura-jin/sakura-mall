@@ -15,7 +15,7 @@
             </div>
         </div>
         <div class="bar-item bar-right">
-            <div class="cart">加入购物车</div>
+            <div class="cart" @click='addCart'>加入购物车</div>
             <div class="buy">购买</div>
         </div>
     </div>
@@ -23,7 +23,12 @@
 
 <script>
 export default {
-    name:"DetailBottomBar"
+    name:"DetailBottomBar",
+    methods:{
+        addCart(){
+            this.$emit('addCart');
+        }
+    }
 }
 </script>
 
@@ -46,6 +51,9 @@ export default {
                 display: block;
                 font-size: 20px;
                 margin: 10px auto 2px;
+            }
+            .icon-user{
+                color:pink;
             }
             .text{
                 font-size: 12px;
