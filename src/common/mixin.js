@@ -32,3 +32,12 @@ export const backTopMixin={
     },
 
 }
+// tabBar隐藏
+export const tabBarMixin={
+    created() {
+        this.$store.commit('setTabShow',false);
+    },
+    destroyed() {
+        this.$store.commit('setTabShow',true);
+    },
+}

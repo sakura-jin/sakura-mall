@@ -7,6 +7,8 @@ import mutations from './mutations'
 
 Vue.use(VueX);
 const state={
+    // 默认tabBar显示
+    tabBarShow:true,
     cartList:[]
 }
 

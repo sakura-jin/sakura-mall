@@ -2,7 +2,7 @@
     <div id="profile">
         <nav-bar class="nav-bar"><div slot='center'>个人中心</div></nav-bar>
         <div class="login">
-            <div class="photo"><img src="../../assets/images/photo.jpg" alt=""></div>
+            <div class="photo"><img src="../../assets/images/common/photo.jpg" alt=""></div>
             <div class="info">
                 <p>登陆/注册</p>
                 <span>暂未绑定手机号</span>

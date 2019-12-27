@@ -29,7 +29,8 @@ import Scroll from '@/components/common/scroll/Scroll'
 import BackTop from '@/components/content/backTop/BackTop'
 import {getDetail,getRecommend,Goods,Shop,GoodsParam} from '@/network/detail'
 import {debounce} from '@/common/utils'
-import {itemListenerMixin,backTopMixin} from '@/common/mixin'
+import {itemListenerMixin,backTopMixin,tabBarMixin} from '@/common/mixin'
+import {mapActions} from 'vuex'
 export default {
     name:"Detail",
     data(){
@@ -65,7 +66,7 @@ export default {
         this.getDetailData();
         this.getRecommend();
     },
-    mixins:[itemListenerMixin,backTopMixin],
+    mixins:[itemListenerMixin,backTopMixin,tabBarMixin],
     mounted(){
             // let refresh=debounce(this.$refs.scroll.refresh,50);
             // this.itemImglistenner=()=>{refresh()}
@@ -143,6 +144,7 @@ export default {
         // backClick(){
         //     this.$refs.scroll.scrollTo(0,0);
         // }
+        ...mapActions(['addToCart']),
         addCart(){
             const cart={};
             cart.iid=this.iid;
@@ -151,8 +153,16 @@ export default {
             cart.desc = this.goods.desc;
             cart.nowPrice = this.goods.nowPrice;
             cart.count=1;
+            cart.checked=true
             // 添加到store中
-            this.$store.commit('addCart',cart);
+            // this.$store.commit('addCart',cart);
+            // this.$store.dispatch('addToCart',cart).then(res=>{
+                // console.log(res);
+                // this.$myToast.toastShow(res);
+            // });
+            this.addToCart(cart).then(res=>{
+                this.$myToast.toastShow(res);
+            })
         }
     }
 }
