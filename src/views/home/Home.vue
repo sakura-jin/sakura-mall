@@ -130,7 +130,9 @@ export default {
                 const goodsList=res.data.list;
                 this.goodsList[type].list.push(...goodsList);
                 this.goodsList[type].page+=1;
-                this.$refs.scroll.finishPullUp();
+               if( this.$refs.scroll){
+                    this.$refs.scroll.finishPullUp();
+               }
             })
         }
     }

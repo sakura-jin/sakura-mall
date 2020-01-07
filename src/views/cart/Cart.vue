@@ -35,6 +35,10 @@ export default {
         color: #fff;
         font-weight: bold;
         font-size: 20px;
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
     }
     .cart-list{
         position: absolute;

@@ -1,7 +1,9 @@
 <template>
   <div id="app">
      <keep-alive exclude='Detail'> 
-     <router-view></router-view>
+       <transition name='fade'>
+         <router-view></router-view>
+       </transition>
      </keep-alive>
    <main-tab-bar v-if='$store.getters.tabBarShow'/>
   </div>
@@ -18,4 +20,10 @@ export default {
 </script>
 
 <style lang="scss">
+.fade-enter-active, .fade-leave-active {
+  transition: opacity .2s;
+}
+.fade-enter, .fade-leave-to {
+  opacity: 0;
+}
 </style>
